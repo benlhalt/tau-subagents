@@ -664,6 +664,11 @@ class SubagentManager:
                 model=selection.model,
                 cwd=child_cwd,
                 storage=storage,
+                # Children use in-memory storage without a session record, so the
+                # default session_id=None would suppress provider affinity headers
+                # (e.g. OpenCode Go's x-opencode-session, tau commit 7868ec7) and
+                # those requests fail with HTTP 400. scope the per-run id here.
+                session_id=run.agent_id,
                 system=prompt_text if append_active else None,
                 custom_system_prompt=None if append_active else prompt_text,
                 # Children always discover skills natively (Tau defaults
